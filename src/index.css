@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-arsenal-red: #EF0107;
+  --color-app-bg: #FFFFFF;
+  --color-card-bg: #FAFAFA;
+  --color-card-border: #EEEEEE;
+  --color-text-main: #1A1A1A;
+  --color-text-muted: #888888;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-app-bg text-text-main antialiased selection:bg-arsenal-red/10;
+    font-size: 16px; /* 12pt approx */
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-bold tracking-tight text-text-main;
+  }
+}
+
+/* Native feel: hide scrollbars globally */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.premium-card {
+  @apply bg-card-bg border border-card-border shadow-[0_2px_15px_rgba(0,0,0,0.02)] rounded-2xl;
+}
+
+.ticket-card {
+  @apply bg-card-bg border border-card-border shadow-[0_8px_30px_rgba(0,0,0,0.04)] rounded-2xl relative overflow-hidden;
+}
+
+.glass-nav {
+  @apply bg-white/80 backdrop-blur-xl border-t border-card-border;
+}
+
+.glass-nav-reels {
+  @apply bg-black/40 backdrop-blur-xl border-t border-white/10;
+}

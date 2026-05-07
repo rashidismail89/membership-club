@@ -1,0 +1,14 @@
+{
+  "name": "Road to Budapest",
+  "description": "The ultimate Arsenal fan hub tracking the journey to the final in Budapest with real-time chat, video reels, and fan discovery.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "real-time chat",
+    "video reels",
+    "fan discovery"
+  ]
+}

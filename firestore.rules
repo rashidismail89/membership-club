@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitives
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // User Validation
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'name', 'email']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.uid == request.auth.uid &&
+             (data.get('isProfileComplete', false) is bool);
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn(); // Public directory
+      allow create: if isVerified() && isValidUser(incoming()) && isValidId(userId);
+      allow update: if isVerified() && isOwner(userId) && isValidUser(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'country', 'gender', 'photoURL', 'status', 'isProfileComplete']);
+    }
+
+    // Post Validation
+    function isValidPost(data) {
+      return data.keys().hasAll(['userId', 'videoURL', 'thumbnail', 'caption', 'location', 'likesCount', 'createdAt', 'userName']) &&
+             data.userId == request.auth.uid &&
+             data.userName is string && data.userName.size() <= 100 &&
+             (data.get('userPhoto', null) == null || (data.userPhoto is string && data.userPhoto.size() <= 2000)) &&
+             data.videoURL is string && data.videoURL.size() <= 1000000 &&
+             data.thumbnail is string && data.thumbnail.size() <= 1000000 &&
+             data.caption is string && data.caption.size() <= 1000 &&
+             data.likesCount is number &&
+             data.createdAt == request.time;
+    }
+
+    match /posts/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isVerified() && isValidPost(incoming()) && isValidId(postId);
+      allow update: if isVerified() && (
+        // Action: Like
+        (incoming().diff(existing()).affectedKeys().hasOnly(['likesCount']) && incoming().likesCount == existing().likesCount + 1) ||
+        // Action: Edit
+        (isOwner(existing().userId) && incoming().diff(existing()).affectedKeys().hasOnly(['caption', 'location']))
+      );
+      allow delete: if isVerified() && isOwner(existing().userId);
+    }
+
+    // Chat Validation (Global Chat)
+    function isValidMessage(data) {
+      return data.keys().hasAll(['senderId', 'messageBody', 'senderName', 'senderPhoto', 'timestamp']) &&
+             data.senderId == request.auth.uid &&
+             data.messageBody is string && data.messageBody.size() <= 1000 &&
+             data.timestamp == request.time;
+    }
+
+    match /global_chat/{msgId} {
+      allow list: if isSignedIn();
+      allow create: if isVerified() && isValidMessage(incoming()) && isValidId(msgId);
+      // No updates or deletes allowed for chat history durability
+    }
+
+    // Sponsors (Read Only for fans)
+    match /sponsors/{adId} {
+      allow read: if true; // Publicly viewable
+    }
+  }
+}

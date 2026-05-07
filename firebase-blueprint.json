@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Arsenal fan profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "country": { "type": "string" },
+        "gender": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "status": { "type": "string" },
+        "isProfileComplete": { "type": "boolean" }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Video reel post",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhoto": { "type": "string" },
+        "videoURL": { "type": "string" },
+        "thumbnail": { "type": "string" },
+        "caption": { "type": "string" },
+        "location": { "type": "string" },
+        "likesCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "videoURL", "userName"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "messageBody": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["senderId", "receiverId", "messageBody"]
+    },
+    "Sponsor": {
+      "title": "Sponsor",
+      "description": "Ad banner",
+      "type": "object",
+      "properties": {
+        "adId": { "type": "string" },
+        "bannerImageURL": { "type": "string" },
+        "linkURL": { "type": "string" },
+        "priority": { "type": "number" }
+      },
+      "required": ["bannerImageURL"]
+    }
+  },
+  "firestore": {
+    "users": {
+        "schema": "User",
+        "description": "Collection of fan profiles"
+    },
+    "posts": {
+        "schema": "Post",
+        "description": "Video reels shared by fans"
+    },
+    "global_chat": {
+        "schema": "Message",
+        "description": "Real-time global chat messages"
+    },
+    "sponsors": {
+        "schema": "Sponsor",
+        "description": "Rotating sponsor banners"
+    }
+  }
+}
