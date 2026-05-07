@@ -325,7 +325,7 @@ export default function App() {
       </main>
 
       <nav className={cn(
-        "fixed bottom-6 left-4 right-4 h-16 flex items-center justify-around px-4 z-[50] md:max-w-md md:left-1/2 md:-translate-x-1/2 transition-all duration-500 rounded-[24px] shadow-[0_8px_40px_rgba(0,0,0,0.1)]",
+        "fixed bottom-0 left-0 right-0 h-20 pb-2 flex items-center justify-around px-2 z-[50] md:max-w-md md:left-1/2 md:-translate-x-1/2 transition-all duration-500 rounded-t-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.04)]",
         activeTab === 'reels' ? "glass-nav-reels" : "glass-nav"
       )}>
         <NavButton active={activeTab === 'home'} icon={<HomeIcon />} label="Hub" onClick={() => setActiveTab('home')} />
