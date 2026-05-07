@@ -88,7 +88,7 @@ export const GunnersNearby: React.FC = () => {
           <div key={user.uid} className="flex items-center justify-between p-3 bg-white border border-[#EEEEEE] rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] transition-all cursor-pointer group">
             <div className="flex items-center space-x-4">
               <div className="w-[50px] h-[50px] rounded-full p-0.5 border border-[#EEEEEE] relative flex-shrink-0">
-                  <img src={user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`} alt={user.name} className="w-full h-full rounded-full object-cover" referrerPolicy="no-referrer" />
+                  <img src={user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`} alt={user.name} className="w-full h-full rounded-full object-cover" referrerPolicy="no-referrer" loading="lazy" />
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm" />
               </div>
               <div className="flex flex-col">

@@ -34,6 +34,7 @@ export default function App() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
+  const [activeReelIndex, setActiveReelIndex] = useState(0);
   const [posts, setPosts] = useState<Post[]>([]);
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [activeUsers, setActiveUsers] = useState<UserProfile[]>([]);
@@ -237,6 +238,7 @@ export default function App() {
                                 alt="Reel" 
                                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                 referrerPolicy="no-referrer"
+                                loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                             <div className="absolute bottom-3 left-3 right-3">
@@ -261,6 +263,7 @@ export default function App() {
                                     alt="User" 
                                     className="w-full h-full rounded-full object-cover"
                                     referrerPolicy="no-referrer"
+                                    loading="lazy"
                                 />
                                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm" />
                              </div>
@@ -275,10 +278,28 @@ export default function App() {
         {activeTab === 'discover' && <GunnersNearby />}
         {activeTab === 'chat' && <Chat />}
         {activeTab === 'reels' && (
-          <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory no-scrollbar bg-black">
-            {posts.map((post) => (
-              <VideoReel key={post.id} post={post} isActive={activeTab === 'reels'} />
-            ))}
+          <div 
+            className="h-screen w-full overflow-y-scroll snap-y snap-mandatory no-scrollbar bg-black"
+            onScroll={(e) => {
+              const target = e.currentTarget;
+              const index = Math.round(target.scrollTop / target.clientHeight);
+              if (index !== activeReelIndex) {
+                setActiveReelIndex(index);
+              }
+            }}
+          >
+            {posts.map((post, index) => {
+              const isVisible = Math.abs(index - activeReelIndex) <= 1;
+              if (!isVisible) return <div key={post.id} className="h-screen w-full snap-start" />;
+              
+              return (
+                <VideoReel 
+                  key={post.id} 
+                  post={post} 
+                  isActive={activeTab === 'reels' && index === activeReelIndex} 
+                />
+              );
+            })}
           </div>
         )}
 
@@ -325,7 +346,7 @@ export default function App() {
       </main>
 
       <nav className={cn(
-        "fixed bottom-0 left-0 right-0 h-20 pb-2 flex items-center justify-around px-2 z-[50] md:max-w-md md:left-1/2 md:-translate-x-1/2 transition-all duration-500 rounded-t-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.04)]",
+        "fixed bottom-4 left-4 right-4 h-16 flex items-center justify-around px-2 z-[50] md:max-w-md md:left-1/2 md:-translate-x-1/2 transition-all duration-500 rounded-[28px] shadow-[0_15px_50px_rgba(0,0,0,0.1)]",
         activeTab === 'reels' ? "glass-nav-reels" : "glass-nav"
       )}>
         <NavButton active={activeTab === 'home'} icon={<HomeIcon />} label="Hub" onClick={() => setActiveTab('home')} />
@@ -352,16 +373,16 @@ const NavButton: React.FC<{ active: boolean; icon: React.ReactNode; label: strin
   <button 
     onClick={onClick}
     className={cn(
-        "flex flex-col items-center justify-center space-y-1 transition-all duration-300 relative py-2 px-1 w-14 group",
+        "flex flex-col items-center justify-center space-y-0.5 transition-all duration-300 relative py-1 px-1 w-14 group",
         active ? "text-arsenal-red" : "text-text-muted hover:text-text-main"
     )}
   >
     <div className={cn(
-        "p-1.5 rounded-full transition-all duration-500 transform group-active:scale-90",
-        active ? "bg-arsenal-red/10" : "bg-transparent"
+        "p-1.5 rounded-2xl transition-all duration-500 transform group-active:scale-95",
+        active ? "bg-arsenal-red/10" : ""
     )}>
         {React.cloneElement(icon as React.ReactElement, { size: 18, strokeWidth: active ? 2.5 : 2 })}
     </div>
-    <span className={cn("text-[9px] font-bold uppercase tracking-widest transition-opacity", active ? "opacity-100" : "opacity-40")}>{label}</span>
+    <span className={cn("text-[8px] font-black uppercase tracking-[0.1em] transition-all", active ? "opacity-100" : "opacity-30 translate-y-1 scale-90")}>{label}</span>
   </button>
 );

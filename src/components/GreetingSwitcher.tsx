@@ -20,17 +20,17 @@ export const GreetingSwitcher: React.FC<GreetingSwitcherProps> = ({ userName = "
   }, []);
 
   return (
-    <div className="h-10 flex items-center px-6 overflow-hidden">
+    <div className="h-12 flex items-center px-6 overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={GREETINGS[index]}
-          initial={{ y: 8, opacity: 0 }}
+          initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -8, opacity: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ y: -12, opacity: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-col"
         >
-          <h2 className="text-[18px] font-black text-text-main tracking-tighter leading-none">
+          <h2 className="text-[28px] font-black text-text-main tracking-tighter leading-none">
             {GREETINGS[index]}, <span className="font-black bg-clip-text text-transparent bg-gradient-to-r from-arsenal-red to-[#B38728] drop-shadow-sm">{userName}</span>
           </h2>
         </motion.div>

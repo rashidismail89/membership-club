@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Heart, MessageCircle, Share2, MapPin } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Heart, MessageCircle, Share2, MapPin, Loader2 } from 'lucide-react';
 import { Post } from '../types';
 import { cn } from '../lib/utils';
 
@@ -12,6 +12,8 @@ interface VideoReelProps {
 export const VideoReel: React.FC<VideoReelProps> = ({ post, isActive }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [liked, setLiked] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -26,6 +28,28 @@ export const VideoReel: React.FC<VideoReelProps> = ({ post, isActive }) => {
 
   return (
     <div className="relative w-full h-screen snap-start bg-black flex items-center justify-center overflow-hidden group">
+      {/* High-Fidelity Placeholder (Visible while loading) */}
+      <AnimatePresence>
+        {(!isLoaded || isBuffering) && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10"
+          >
+            <img 
+              src={post.thumbnail || post.videoURL} 
+              alt="Thumbnail" 
+              className="w-full h-full object-cover blur-2xl scale-110 opacity-60" 
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-8 h-8 text-white/40 animate-spin" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <video
         ref={videoRef}
         src={post.videoURL}
@@ -33,7 +57,13 @@ export const VideoReel: React.FC<VideoReelProps> = ({ post, isActive }) => {
         loop
         muted
         playsInline
-        className="w-full h-full object-cover"
+        onCanPlay={() => setIsLoaded(true)}
+        onWaiting={() => setIsBuffering(true)}
+        onPlaying={() => setIsBuffering(false)}
+        className={cn(
+          "w-full h-full object-cover transition-opacity duration-700",
+          isLoaded ? "opacity-100" : "opacity-0"
+        )}
         referrerPolicy="no-referrer"
       />
       
